@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import InterviewerListItem from './InterviewerListItem';
 
-import 'components/InterviewerList.scss';
+import 'components/styles/InterviewerList.scss';
 
 export default function InterviewerList(props) {
   const {interviewers, value, onChange} = props;

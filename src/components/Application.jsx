@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import "components/Application.scss";
+import "components/styles/Application.scss";
 
 // import components
 import DayList from 'components/DayList';
