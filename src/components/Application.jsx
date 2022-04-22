@@ -7,44 +7,8 @@ import "components/Appointment"
 import DayList from 'components/DayList';
 import Appointment from "./Appointment";
 
-const appointments = {
-  "1": {
-    id: 1,
-    time: "12pm",
-  },
-  "2": {
-    id: 2,
-    time: "1pm",
-    interview: {
-      student: "Lydia Miller-Jones",
-      interviewer:{
-        id: 3,
-        name: "Sylvia Palmer",
-        avatar: "https://i.imgur.com/LpaY82x.png",
-      }
-    }
-  },
-  "3": {
-    id: 3,
-    time: "2pm",
-  },
-  "4": {
-    id: 4,
-    time: "3pm",
-    interview: {
-      student: "Archie Andrews",
-      interviewer:{
-        id: 4,
-        name: "Cohana Roy",
-        avatar: "https://i.imgur.com/FK8V841.jpg",
-      }
-    }
-  },
-  "5": {
-    id: 5,
-    time: "4pm",
-  }
-};
+// import helpers
+import { getAppointmentsForDay } from "helpers/selectors";
 
 export default function Application(props) {
   const [state, setState] = useState({
@@ -53,30 +17,34 @@ export default function Application(props) {
     appointments: {}
   });
 
-  const setDays = (days) => {
-    setState(prev => ({...prev, days}));
-  };
-
   const setDay = (day) => {
     setState(prev => ({...prev, day }));
   };
   
-
   useEffect(() => {
-    axios.get('/api/days')
-      .then((response) => setDays(response.data))
-      .catch((e) => console.log(e.message));
-  }, [state.days])
+    Promise.all([
+      axios.get('/api/days'),
+      axios.get('/api/appointments'),
+      axios.get('/api/interviewers')
+    ]).then((response) => {
+      setState(prev => ({...prev,
+        days: response[0].data,
+        appointments: response[1].data,
+        interviewers: response[2].data
+      }));
+    }).catch((error) => console.log(error.message));
+  }, [])
 
-  const dailyAppointments = Object.values(appointments).map((appointment) => {
+  const dailyAppointments = getAppointmentsForDay(state, state.day);
 
+  const appointmentsforday = dailyAppointments.map((appointment) => {
     return (
       <Appointment
         key={appointment.id}
         {...appointment}
       />
     );
-  });
+  })
 
   return (
     <main className="layout">
@@ -101,7 +69,7 @@ export default function Application(props) {
         />
       </section>
       <section className="schedule">
-        {dailyAppointments}
+        {appointmentsforday}
         <Appointment key="last" time="5pm" />
       </section>
     </main>
