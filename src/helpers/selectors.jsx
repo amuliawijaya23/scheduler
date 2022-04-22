@@ -3,9 +3,17 @@ export function getAppointmentsForDay(state, day) {
   let appointments = [];
   
   if(selectedDay) {
-    appointments = selectedDay.appointments.map(id => state.appointments[id])
+    appointments = selectedDay.appointments.map(id => state.appointments[id]);
+  }
+  return appointments;
+};
+
+export function getInterview(state, interview) {
+  let appointment = interview || null;
+
+  if(appointment) {
+    appointment = {...interview, interviewer: state.interviewers[interview.interviewer]}
   }
 
-  return appointments;
-
+  return appointment;
 }
