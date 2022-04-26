@@ -20,6 +20,22 @@ export default function Application(props) {
   const setDay = (day) => {
     setState(prev => ({...prev, day }));
   };
+
+  const bookInterview = (id, interview) => {
+    const appointment = {...state.appointments[id], interview: {...interview}};
+    const appointments = {...state.appointments, [id]: appointment};
+
+    return new Promise((resolve, reject) =>  {
+      axios.put(`/api/appointments/${id}`, {interview})
+        .then(() => {
+          setState({...state, appointments});
+          resolve();
+      }).catch(err => {
+          console.log(err.message);
+          reject();
+      });
+    });
+  };
   
   useEffect(() => {
     Promise.all([
@@ -47,6 +63,7 @@ export default function Application(props) {
         time={appointment.time}
         interview={interview}
         interviewers={interviewers}
+        bookInterview={bookInterview}
       />
     );
   })
