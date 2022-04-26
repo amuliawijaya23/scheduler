@@ -12,14 +12,31 @@ export default function useApplicationData(props) {
     setState(prev => ({...prev, day }));
   };
 
+  const getSpotsForDay = (state, day) => {
+    const selectedDay = state.days.find((x) => x.name === day);
+    let spots = 0;
+
+    (selectedDay.appointments).forEach(appointment => {
+      if (state.appointments[appointment].interview === null) spots++;
+    })
+
+    return {spots, day: selectedDay.id - 1};
+  }
+
   const bookInterview = (id, interview) => {
     const appointment = {...state.appointments[id], interview: {...interview}};
     const appointments = {...state.appointments, [id]: appointment};
 
+    const {spots, day} = getSpotsForDay({...state, appointments}, state.day);
+
+    const selectedDay = {...state.days[day], spots: spots};
+    const days = [...state.days];
+    days[day] = selectedDay;
+
     return new Promise((resolve, reject) =>  {
       axios.put(`/api/appointments/${id}`, {interview})
         .then(() => {
-          setState({...state, appointments});
+          setState({...state, appointments, days: days});
           resolve();
         })
         .catch(err => {
@@ -33,10 +50,16 @@ export default function useApplicationData(props) {
     const appointment = {...state.appointments[id], interview: null};
     const appointments = {...state.appointments, [id]: appointment};
 
+    const {spots, day} = getSpotsForDay({...state, appointments}, state.day);
+
+    const selectedDay = {...state.days[day], spots: spots};
+    const days = [...state.days];
+    days[day] = selectedDay;
+
     return new Promise((resolve, reject) => {
       axios.delete(`/api/appointments/${id}`)
         .then(() => {
-          setState({...state, appointments});
+          setState({...state, appointments, days: days});
           resolve();
         })
         .catch(err => {
