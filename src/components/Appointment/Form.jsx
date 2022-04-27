@@ -15,11 +15,12 @@ export default function Form(props) {
       return;
     }
 
-    if (!interviewer) {
+    if (interviewer === null) {
       setError('please select an interviewer');
       return;
     }
 
+    setError(null);
     props.onSave(student, interviewer);
   }
 
