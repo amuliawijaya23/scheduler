@@ -1,12 +1,37 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 
-export default function useApplicationData(props) {
+
+export default function useApplicationData() {
   const [state, setState] = useState({
     day: 'Monday',
     days: [],
-    appointments: {}
+    appointments: {},
+    interviewers: {}
   });
+  
+  const ws = useRef(0);
+  
+  useEffect(() => {
+    ws.current = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
+    ws.current.onopen = () => {
+      ws.current.send('ping')
+      ws.current.onmessage = (e) => console.log(e.data);
+    }
+
+    Promise.all([
+      axios.get('/api/days'),
+      axios.get('/api/appointments'),
+      axios.get('/api/interviewers')
+    ]).then((response) => {
+      setState(prev => ({...prev,
+        days: response[0].data,
+        appointments: response[1].data,
+        interviewers: response[2].data
+      }));
+    }).catch((error) => console.log(error.message));
+  }, [])
+
 
   const setDay = (day) => {
     setState(prev => ({...prev, day }));
@@ -19,7 +44,6 @@ export default function useApplicationData(props) {
     (selectedDay.appointments).forEach(appointment => {
       if (state.appointments[appointment].interview === null) spots++;
     })
-
     return {spots, day: selectedDay.id - 1};
   }
 
@@ -66,22 +90,6 @@ export default function useApplicationData(props) {
         });
     });
   };
-
-    useEffect(() => {
-    Promise.all([
-      axios.get('/api/days'),
-      axios.get('/api/appointments'),
-      axios.get('/api/interviewers')
-    ]).then((response) => {
-      setState(prev => ({...prev,
-        days: response[0].data,
-        appointments: response[1].data,
-        interviewers: response[2].data
-      }));
-    }).catch((error) => console.log(error.message));
-  }, [])
-
-
 
   return {state, setDay, bookInterview, cancelInterview}
 }

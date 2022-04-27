@@ -5,12 +5,15 @@
   "proxy": "http://localhost:8001",
   "dependencies": {
     "axios": "^0.26.1",
+    "bufferutil": "^4.0.6",
     "classnames": "^2.2.6",
     "normalize.css": "^8.0.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-hooks-testing-library": "^0.6.0",
-    "react-scripts": "3.0.0"
+    "react-scripts": "3.0.0",
+    "utf-8-validate": "^5.0.9",
+    "ws": "^5.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
