@@ -27,11 +27,11 @@ export default function reducer(state, action) {
 
       const days = state.days.map(day => (day.name === findDay.name) ? {...day, spots} : day);
 
-      return {...state, appointments, days}
+      return {...state, appointments, days};
     
     default:
       throw new Error(
         `Tried to reduce with unsupported action type: ${action.type}`
       );
-  }
-}
+  };
+};

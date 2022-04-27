@@ -4,7 +4,7 @@ import reducer, {
   SET_DAY,
   SET_APPLICATION_DATA,
   SET_INTERVIEW
-} from 'reducers/application';
+} from 'reducers/reducer';
 
 
 export default function useApplicationData() {
@@ -23,7 +23,6 @@ export default function useApplicationData() {
       ws.current.send('ping')
       ws.current.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        console.log('Message Received:', data);
 
         if (data.type === 'SET_INTERVIEW') {
           dispatch({type: SET_INTERVIEW, id: data.id, interview: data.interview})
@@ -52,12 +51,12 @@ export default function useApplicationData() {
 
   const bookInterview = (id, interview) => {
     return axios.put(`/api/appointments/${id}`, {interview})
-      .then((response) => dispatch({type: SET_INTERVIEW, id, interview}));
+      .then(() => dispatch({type: SET_INTERVIEW, id, interview}));
   };
 
   const cancelInterview = (id) => {
     return axios.delete(`/api/appointments/${id}`)
-      .then((response) => dispatch({type: SET_INTERVIEW, id, interview: null}));
+      .then(() => dispatch({type: SET_INTERVIEW, id, interview: null}));
   };
 
   return {state, setDay, bookInterview, cancelInterview}
