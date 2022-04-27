@@ -29,14 +29,13 @@ export default function useApplicationData(props) {
 
     const {spots, day} = getSpotsForDay({...state, appointments}, state.day);
 
-    const selectedDay = {...state.days[day], spots: spots};
-    const days = [...state.days];
-    days[day] = selectedDay;
+    const selectedDay = {...state.days[day], spots};
+    const days = state.days.map(Day => (Day.name === state.day) ? selectedDay : Day)
 
     return new Promise((resolve, reject) =>  {
       axios.put(`/api/appointments/${id}`, {interview})
         .then(() => {
-          setState({...state, appointments, days: days});
+          setState({...state, appointments, days});
           resolve();
         })
         .catch(err => {
@@ -52,14 +51,13 @@ export default function useApplicationData(props) {
 
     const {spots, day} = getSpotsForDay({...state, appointments}, state.day);
 
-    const selectedDay = {...state.days[day], spots: spots};
-    const days = [...state.days];
-    days[day] = selectedDay;
+    const selectedDay = {...state.days[day], spots};
+    const days = state.days.map(Day => (Day.name === state.day) ? selectedDay : Day)
 
     return new Promise((resolve, reject) => {
       axios.delete(`/api/appointments/${id}`)
         .then(() => {
-          setState({...state, appointments, days: days});
+          setState({...state, appointments, days});
           resolve();
         })
         .catch(err => {
