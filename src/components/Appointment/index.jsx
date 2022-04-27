@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import 'components/Appointment/styles.scss';
 
@@ -55,12 +55,21 @@ export default function Appointment(props) {
     .catch(err => transition(ERROR_DELETE, true));
   }
 
+  useEffect(() => {
+    if (props.interview && mode === EMPTY) {
+     transition(SHOW);
+    }
+    if (props.interview === null && mode === SHOW) {
+     transition(EMPTY);
+    }
+   }, [props.interview, transition, mode]);
+
 
   return (
     <article className="appointment">
       <Header time={props.time} />
-      {mode === EMPTY && <Empty onAdd={onAdd} />}
-      {mode === SHOW && (
+      {mode === EMPTY && !props.interview && <Empty onAdd={onAdd} />}
+      {mode === SHOW && props.interview &&(
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}

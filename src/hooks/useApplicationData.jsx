@@ -1,22 +1,33 @@
-import {useState, useEffect, useRef} from 'react';
+import {useEffect, useReducer, useRef} from 'react';
 import axios from 'axios';
+import reducer, {
+  SET_DAY,
+  SET_APPLICATION_DATA,
+  SET_INTERVIEW
+} from 'reducers/reducer';
 
 
 export default function useApplicationData() {
-  const [state, setState] = useState({
+  const [state, dispatch] = useReducer(reducer, {
     day: 'Monday',
     days: [],
     appointments: {},
     interviewers: {}
   });
-  
+
   const ws = useRef(0);
   
   useEffect(() => {
     ws.current = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
     ws.current.onopen = () => {
       ws.current.send('ping')
-      ws.current.onmessage = (e) => console.log(e.data);
+      ws.current.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+
+        if (data.type === 'SET_INTERVIEW') {
+          dispatch({type: SET_INTERVIEW, id: data.id, interview: data.interview})
+        }
+      };
     }
 
     Promise.all([
@@ -24,71 +35,28 @@ export default function useApplicationData() {
       axios.get('/api/appointments'),
       axios.get('/api/interviewers')
     ]).then((response) => {
-      setState(prev => ({...prev,
-        days: response[0].data,
-        appointments: response[1].data,
-        interviewers: response[2].data
-      }));
+      const [days, appointments, interviewers] = response;
+      dispatch({
+        type: SET_APPLICATION_DATA,
+        value: {
+          days: days.data,
+          appointments: appointments.data,
+          interviewers: interviewers.data
+        }
+      })
     }).catch((error) => console.log(error.message));
   }, [])
 
-
-  const setDay = (day) => {
-    setState(prev => ({...prev, day }));
-  };
-
-  const getSpotsForDay = (state, day) => {
-    const selectedDay = state.days.find((x) => x.name === day);
-    let spots = 0;
-
-    (selectedDay.appointments).forEach(appointment => {
-      if (state.appointments[appointment].interview === null) spots++;
-    })
-    return {spots, day: selectedDay.id - 1};
-  }
+  const setDay = (day) => dispatch({type: SET_DAY, value: day});
 
   const bookInterview = (id, interview) => {
-    const appointment = {...state.appointments[id], interview: {...interview}};
-    const appointments = {...state.appointments, [id]: appointment};
-
-    const {spots, day} = getSpotsForDay({...state, appointments}, state.day);
-
-    const selectedDay = {...state.days[day], spots};
-    const days = state.days.map(Day => (Day.name === state.day) ? selectedDay : Day)
-
-    return new Promise((resolve, reject) =>  {
-      axios.put(`/api/appointments/${id}`, {interview})
-        .then(() => {
-          setState({...state, appointments, days});
-          resolve();
-        })
-        .catch(err => {
-          console.log(err.message);
-          reject();
-        });
-    });
+    return axios.put(`/api/appointments/${id}`, {interview})
+      .then(() => dispatch({type: SET_INTERVIEW, id, interview}));
   };
 
   const cancelInterview = (id) => {
-    const appointment = {...state.appointments[id], interview: null};
-    const appointments = {...state.appointments, [id]: appointment};
-
-    const {spots, day} = getSpotsForDay({...state, appointments}, state.day);
-
-    const selectedDay = {...state.days[day], spots};
-    const days = state.days.map(Day => (Day.name === state.day) ? selectedDay : Day)
-
-    return new Promise((resolve, reject) => {
-      axios.delete(`/api/appointments/${id}`)
-        .then(() => {
-          setState({...state, appointments, days});
-          resolve();
-        })
-        .catch(err => {
-          console.log(err.message);
-          reject();
-        });
-    });
+    return axios.delete(`/api/appointments/${id}`)
+      .then(() => dispatch({type: SET_INTERVIEW, id, interview: null}));
   };
 
   return {state, setDay, bookInterview, cancelInterview}
