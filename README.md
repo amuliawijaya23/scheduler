@@ -21,3 +21,18 @@ npm test
 ```sh
 npm run storybook
 ```
+
+
+## Product Overview
+---
+### Daylist shows available spot/s remaining, background turns red on hover and turn white when selected.
+![select day](/assets/day-select.gif)
+
+---
+### Creating new appointment
+![new booking](/assets/book-interview.gif)
+
+---
+### Form validation with error message
+![form validation](/assets/form-validator.gif)
+

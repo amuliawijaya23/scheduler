@@ -51,7 +51,6 @@ export default function useApplicationData() {
         }
       })
     })
-    return () => ws.current.close();
   }, [])
 
   const setDay = (day) => dispatch({type: SET_DAY, value: day});
