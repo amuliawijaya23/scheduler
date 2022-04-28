@@ -18,9 +18,9 @@ export default function useApplicationData() {
   const ws = useRef(0);
   
   useEffect(() => {
-    ws.current = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
+    ws.current = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+
     ws.current.onopen = () => {
-      ws.current.send('ping')
       ws.current.onmessage = (e) => {
         const data = JSON.parse(e.data);
 
@@ -44,7 +44,8 @@ export default function useApplicationData() {
           interviewers: interviewers.data
         }
       })
-    }).catch((error) => console.log(error.message));
+    })
+    return () => ws.current.close();
   }, [])
 
   const setDay = (day) => dispatch({type: SET_DAY, value: day});
