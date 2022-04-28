@@ -51,6 +51,11 @@
     "react-test-renderer": "^16.9.0"
   },
   "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "src/**/*.jsx",
+      "!src/index.jsx"
+    ],
     "watchPathIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/.git/"
