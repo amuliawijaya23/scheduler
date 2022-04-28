@@ -102,13 +102,13 @@ describe('Application', () => {
 
     await waitForElement(() => getByText(appointment, 'Save'));
 
-    fireEvent.change(getByTestId(appointment, 'student-name-input'), {
-      target: {value: 'Lydia Miller-Jones' }
-    });
+    fireEvent.change(getByTestId(appointment, 'student-name-input'), {target: {value: 'Lydia Miller-Jones' }});
     fireEvent.click(getByText(appointment, 'Save'));
+
     expect(getByText(appointment, 'Saving')).toBeInTheDocument();
 
     await waitForElement(() => getByText(container, 'Lydia Miller-Jones'));
+    
     const day = getAllByTestId(container, 'day').find(day => queryByText(day, 'Monday'));
 
     expect(getByText(day, '1 spot remaining')).toBeInTheDocument();
@@ -126,8 +126,7 @@ describe('Application', () => {
 
 		fireEvent.click(getByAltText(appointment, "Add"));
 
-		fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
-			target: { value: "Lydia Miller-Jones" }});
+		fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {target: { value: "Lydia Miller-Jones" }});
 
 		fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
 
@@ -137,9 +136,8 @@ describe('Application', () => {
 
 		await waitForElement(() => getByText(appointment, "Error"));
 
-		const day = getAllByTestId(container, "day").find(day =>
-			queryByText(day, "Monday")
-		);
+		const day = getAllByTestId(container, "day").find(day =>queryByText(day, "Monday"));
+    
 		expect(getByText(day, "1 spot remaining")).toBeInTheDocument();
 
   });
