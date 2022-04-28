@@ -5,6 +5,7 @@ import 'components/styles/InterviewerListItem.scss'
 
 export default function InterviewerListItem(props) {
 
+  // add className for selected interviewer
   const interviewerClass = classNames('interviewers__item', {
     'interviewers__item--selected': props.selected
   })

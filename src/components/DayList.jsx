@@ -4,6 +4,7 @@ import DayListItem from './DayListItem';
 
 export default function DayList(props) {
   
+  // create and return dayListItem for every available day
   const dayListItems = props.days.map((day) => {
     return (
       <DayListItem 

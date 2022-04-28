@@ -5,6 +5,7 @@ import 'components/Appointment/styles.scss';
 // Custom Hook
 import useVisualMode from 'hooks/useVisualMode';
 
+// import components
 import Header from './Header';
 import Empty from './Empty';
 import Show from './Show';
@@ -13,6 +14,7 @@ import Status from './Status';
 import Confirm from './Confirm';
 import Error from './Error';
 
+// constants for modes
 const EMPTY = 'EMPTY';
 const SHOW = 'SHOW';
 const CREATE = 'CREATE';
@@ -26,12 +28,18 @@ const ERROR_DELETE = 'ERROR_DELETE';
 
 
 export default function Appointment(props) {
+  // initialize visual hook
   const {mode, transition, back} = useVisualMode(props.interview ? SHOW : EMPTY);
   
+  // onAdd shows the create form
   const onAdd = () => transition(CREATE);
+
+  // onCancel initialize back function to return to previous mode in history
   const onCancel = () => back();
 
+  // saves new interview
   const onSave = (name, interviewer) => {
+    // show loading state
     transition(SAVING);
 
     const interview = {
@@ -44,10 +52,12 @@ export default function Appointment(props) {
     .catch(err => transition(ERROR_SAVE, true));
   };
 
+  // show confirmation box when pressing delete
   const onDelete = () => {
     transition(CONFIRM);
   };
   
+  // delete appointment after confirmation to delete
   const onConfirm = () => {
     transition(DELETING, true);
     props.cancelInterview(props.id)
@@ -55,6 +65,7 @@ export default function Appointment(props) {
     .catch(err => transition(ERROR_DELETE, true));
   }
 
+  // useEffect to show correct mode when websocket sends and update new data
   useEffect(() => {
     if (props.interview && mode === EMPTY) {
      transition(SHOW);

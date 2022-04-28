@@ -13,7 +13,7 @@ import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "help
 import useApplicationData from "hooks/useApplicationData";
 
 export default function Application(props) {
-
+  // initialize application hook
   const {
     state,
     setDay,
@@ -21,10 +21,11 @@ export default function Application(props) {
     cancelInterview
   } = useApplicationData();
   
-
+  // get appointments and interviewers for selected day
   const dailyAppointments = getAppointmentsForDay(state, state.day);
   const interviewers = getInterviewersForDay(state, state.day);
 
+  // create and return Appointment components for the day
   const appointments = dailyAppointments.map((appointment) => {
     const interview = getInterview(state, appointment.interview);
     return (

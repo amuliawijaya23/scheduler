@@ -4,11 +4,12 @@ import InterviewerList from 'components/InterviewerList';
 import Button from 'components/Button';
 
 export default function Form(props) {
-
+  // initialize default state
   const [student, setStudent] = useState(props.student || '');
   const [interviewer, setInterviewer] = useState(props.interviewer || null);
   const [error, setError] = useState('');
 
+  //validate input field is not empty and and interviewer has been selected
   const validate = () => {
     if (student === '') {
       setError('student name cannot be blank');

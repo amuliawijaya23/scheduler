@@ -8,6 +8,7 @@ import reducer, {
 
 
 export default function useApplicationData() {
+  // set reducer with initial state
   const [state, dispatch] = useReducer(reducer, {
     day: 'Monday',
     days: [],
@@ -15,12 +16,16 @@ export default function useApplicationData() {
     interviewers: {}
   });
 
+  // using useRef to declare ws outside useEffect
   const ws = useRef(0);
   
   useEffect(() => {
+    // create in websocket in ws.current
     ws.current = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
 
     ws.current.onopen = () => {
+
+      // grabs event data from server and update state with received data
       ws.current.onmessage = (e) => {
         const data = JSON.parse(e.data);
 
@@ -30,6 +35,7 @@ export default function useApplicationData() {
       };
     }
 
+    // grab api data and set new state with the data received
     Promise.all([
       axios.get('/api/days'),
       axios.get('/api/appointments'),
@@ -50,11 +56,13 @@ export default function useApplicationData() {
 
   const setDay = (day) => dispatch({type: SET_DAY, value: day});
 
+  // send put request to book new interview
   const bookInterview = (id, interview) => {
     return axios.put(`/api/appointments/${id}`, {interview})
       .then(() => dispatch({type: SET_INTERVIEW, id, interview}));
   };
 
+  // send delete request to cancel interview
   const cancelInterview = (id) => {
     return axios.delete(`/api/appointments/${id}`)
       .then(() => dispatch({type: SET_INTERVIEW, id, interview: null}));

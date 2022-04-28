@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 const InterviewerList = (props) => {
 
+  // create and return InterviewerListItem component for every interviewer
   const interviewerListItems = props.interviewers.map((interviewer) => {
     return (
       <InterviewerListItem
